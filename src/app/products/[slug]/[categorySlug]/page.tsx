@@ -1,0 +1,93 @@
+import { notFound } from 'next/navigation';
+import connectDB from '@/lib/mongodb';
+import Category from '@/app/models/Category';
+import SubCategory from '@/app/models/SubCategory';
+import CategorySubCategoriesClient from './CategorySubCategoriesClient';
+import { Metadata } from 'next';
+
+interface PageProps {
+  params: {
+    slug: string;        // navbar category slug
+    categorySlug: string; // category slug
+  };
+}
+
+async function getCategoryWithSubCategories(navbarSlug: string, categorySlug: string) {
+  try {
+    await connectDB();
+
+    const category = await Category.findOne({
+      slug: categorySlug,
+      isActive: true
+    }).populate('navbarCategory', 'name slug description');
+
+    // Verify the category belongs to the correct navbar category
+    if (!category || (category.navbarCategory as any)?.slug !== navbarSlug) {
+      return null;
+    }
+
+    // Get all subcategories under this category
+    const subcategories = await SubCategory.find({
+      category: category._id,
+      isActive: true
+    }).sort({ createdAt: -1 });
+
+    return {
+      category: JSON.parse(JSON.stringify(category)),
+      subcategories: JSON.parse(JSON.stringify(subcategories))
+    };
+  } catch (error) {
+    console.error('Error fetching category with subcategories:', error);
+    return null;
+  }
+}
+
+export default async function CategorySubCategoriesPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const data = await getCategoryWithSubCategories(resolvedParams.slug, resolvedParams.categorySlug);
+
+  if (!data) {
+    notFound();
+  }
+
+  return <CategorySubCategoriesClient data={data} />;
+}
+
+// Generate metadata for the page
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const data = await getCategoryWithSubCategories(resolvedParams.slug, resolvedParams.categorySlug);
+
+  if (!data) {
+    return {
+      title: 'Category Not Found - Huawei eKit UAE',
+      description: 'The requested product category could not be found.',
+      robots: {
+        index: false,
+        follow: false,
+      }
+    };
+  }
+
+  const { category } = data;
+  const navbarCategory = (category.navbarCategory as any);
+  const title = `${category.name} Categories - ${navbarCategory.name} - Huawei eKit UAE`;
+  const description = category.description || 
+    `Explore ${category.name} subcategories under ${navbarCategory.name} at Huawei eKit UAE. Find comprehensive IT solutions and technology products tailored for UAE businesses.`;
+
+  return {
+    title,
+    description,
+    keywords: `${category.name}, ${navbarCategory.name}, Huawei products, IT solutions UAE, networking solutions, enterprise technology, Huawei eKit UAE`,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `https://huawei-ekit.ae/products/${resolvedParams.slug}/${resolvedParams.categorySlug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
