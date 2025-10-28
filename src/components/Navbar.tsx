@@ -110,33 +110,33 @@ const Navbar = () => {
     },
   ];
 
-  // Fetch navbar categories from API
+  // Fetch categories from API for Products dropdown
   const fetchNavbarCategories = useCallback(async () => {
     try {
-      // Use public API endpoint instead of admin endpoint
-      const response = await fetch('/api/navbar-categories');
+      // Fetch regular categories (not navbar categories) for the Products dropdown
+      const response = await fetch('/api/categories');
       const data = await response.json();
 
-      console.log('Navbar API response:', data);
+      console.log('Categories API response:', data);
       console.log('Categories received:', data.data);
 
       if (data.success && data.data && data.data.length > 0) {
-        setNavbarCategories(data.data);
+        // Group categories to remove duplicates and get unique category slugs
+        const uniqueCategories = Array.from(
+          new Map(data.data.map((cat: any) => [cat.slug, cat])).values()
+        );
 
-        // Log each category's status
-        data.data.forEach((cat: NavbarCategory) => {
-          console.log(`Category: ${cat.name}, Slug: ${cat.slug}`);
+        // Sort categories by order if available, otherwise by name
+        const sortedCategories = uniqueCategories.sort((a: any, b: any) => {
+          if (a.order && b.order) return a.order - b.order;
+          return a.name.localeCompare(b.name);
         });
 
-        // Sort categories by order
-        const sortedCategories = [...data.data].sort((a, b) => a.order - b.order);
-
-        // Create dynamic product items from categories (all categories from public API are active)
-        const dynamicProductItems = sortedCategories
-          .map((category: NavbarCategory) => ({
-            title: category.name,
-            href: `/products/${category.slug}`
-          }));
+        // Create dynamic product items from categories
+        const dynamicProductItems = sortedCategories.map((category: any) => ({
+          title: category.name,
+          href: `/products/${category.slug}`
+        }));
 
         // Create the Products dropdown with dynamic categories
         const productsDropdown: NavigationItem = {
@@ -153,7 +153,7 @@ const Navbar = () => {
           }
         };
 
-        // Create navigation items: Home + Products (with dynamic dropdown) + Contact Us only
+        // Create navigation items: Home + About + Products (with dynamic dropdown) + Contact Us
         const navigationItems: NavigationItem[] = [
           {
             title: 'Home',
@@ -179,7 +179,7 @@ const Navbar = () => {
         setNavigationItems(defaultNavigationItems);
       }
     } catch (error) {
-      console.error('Error fetching navbar categories:', error);
+      console.error('Error fetching categories:', error);
       // Show basic navigation on error
       setNavigationItems(defaultNavigationItems);
     }

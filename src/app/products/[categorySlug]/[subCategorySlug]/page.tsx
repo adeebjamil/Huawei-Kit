@@ -7,13 +7,12 @@ import { Metadata } from 'next';
 
 interface PageProps {
   params: { 
-    slug: string;           // navbar category slug
     categorySlug: string;   // category slug
     subCategorySlug: string; // subcategory slug
   };
 }
 
-async function getSubCategoryWithProducts(navbarSlug: string, categorySlug: string, subCategorySlug: string) {
+async function getSubCategoryWithProducts(categorySlug: string, subCategorySlug: string) {
   try {
     await connectDB();
     
@@ -28,11 +27,10 @@ async function getSubCategoryWithProducts(navbarSlug: string, categorySlug: stri
       }
     });
 
-    // Verify the subcategory belongs to the correct hierarchy
+    // Verify the subcategory belongs to the correct category
     if (!subcategory || 
         !subcategory.category || 
-        (subcategory.category as any).slug !== categorySlug ||
-        (subcategory.category as any).navbarCategory.slug !== navbarSlug) {
+        (subcategory.category as any).slug !== categorySlug) {
       return null;
     }
 
@@ -58,7 +56,7 @@ async function getSubCategoryWithProducts(navbarSlug: string, categorySlug: stri
 
 export default async function SubCategoryProductsPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const data = await getSubCategoryWithProducts(resolvedParams.slug, resolvedParams.categorySlug, resolvedParams.subCategorySlug);
+  const data = await getSubCategoryWithProducts(resolvedParams.categorySlug, resolvedParams.subCategorySlug);
 
   if (!data) {
     notFound();
@@ -70,7 +68,7 @@ export default async function SubCategoryProductsPage({ params }: PageProps) {
 // Generate metadata for the page
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const data = await getSubCategoryWithProducts(resolvedParams.slug, resolvedParams.categorySlug, resolvedParams.subCategorySlug);
+  const data = await getSubCategoryWithProducts(resolvedParams.categorySlug, resolvedParams.subCategorySlug);
   
   if (!data) {
     return {
@@ -99,7 +97,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://huawei-ekit.ae/products/${resolvedParams.slug}/${resolvedParams.categorySlug}/${resolvedParams.subCategorySlug}`,
+      url: `https://huawei-ekit.ae/products/${resolvedParams.categorySlug}/${resolvedParams.subCategorySlug}`,
     },
     robots: {
       index: true,

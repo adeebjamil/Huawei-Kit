@@ -6,14 +6,13 @@ import { Metadata } from 'next';
 
 interface PageProps {
   params: { 
-    slug: string;           // navbar category slug
     categorySlug: string;   // category slug
     subCategorySlug: string; // subcategory slug
     productSlug: string;    // product slug
   };
 }
 
-async function getProductWithHierarchy(navbarSlug: string, categorySlug: string, subCategorySlug: string, productSlug: string) {
+async function getProductWithHierarchy(categorySlug: string, subCategorySlug: string, productSlug: string) {
   try {
     await connectDB();
     
@@ -42,10 +41,8 @@ async function getProductWithHierarchy(navbarSlug: string, categorySlug: string,
 
     // Verify the product belongs to the correct hierarchy
     if (!product || 
-        !product.navbarCategory || 
         !product.category || 
         !product.subcategory ||
-        (product.navbarCategory as any).slug !== navbarSlug ||
         (product.category as any).slug !== categorySlug ||
         (product.subcategory as any).slug !== subCategorySlug) {
       return null;
@@ -61,7 +58,6 @@ async function getProductWithHierarchy(navbarSlug: string, categorySlug: string,
 export default async function ProductDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   const product = await getProductWithHierarchy(
-    resolvedParams.slug, 
     resolvedParams.categorySlug, 
     resolvedParams.subCategorySlug, 
     resolvedParams.productSlug
@@ -103,12 +99,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const product = await getProductWithHierarchy(
-    resolvedParams.slug, 
     resolvedParams.categorySlug, 
     resolvedParams.subCategorySlug, 
     resolvedParams.productSlug
   );
-  
+
   if (!product) {
     return {
       title: 'Product Not Found - Huawei eKit UAE',
@@ -120,13 +115,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const navbarCategory = product.navbarCategory as any;
-  const category = product.category as any;
-  const subcategory = product.subcategory as any;
+  const navbarCategory = (product.navbarCategory as any);
+  const category = (product.category as any);
+  const subcategory = (product.subcategory as any);
 
-  const title = `${product.name} - ${subcategory.name} - ${category.name} - ${navbarCategory.name} - Huawei eKit UAE`;
+  const title = `${product.name} - ${subcategory.name} - ${category.name} - Huawei eKit UAE`;
   const description = product.description || 
-    `High-quality ${product.name} from Huawei eKit UAE. Features include: ${product.keyFeatures.slice(0, 3).join(', ')}. Find detailed specifications and information about this ${subcategory.name} product.`;
+    `Discover ${product.name} from Huawei eKit UAE. Part of our ${subcategory.name} product line in ${category.name}. Premium IT solutions for UAE businesses.`;
 
   return {
     title,
@@ -136,15 +131,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://huawei-ekit.ae/products/${resolvedParams.slug}/${resolvedParams.categorySlug}/${resolvedParams.subCategorySlug}/${resolvedParams.productSlug}`,
-      images: [
-        {
-          url: product.image1,
-          width: 800,
-          height: 600,
-          alt: product.name
-        }
-      ],
+      url: `https://huawei-ekit.ae/products/${resolvedParams.categorySlug}/${resolvedParams.subCategorySlug}/${resolvedParams.productSlug}`,
+      images: product.image1 ? [{ url: product.image1 }] : undefined,
     },
     robots: {
       index: true,

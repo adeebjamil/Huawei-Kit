@@ -7,12 +7,11 @@ import { Metadata } from 'next';
 
 interface PageProps {
   params: {
-    slug: string;        // navbar category slug
     categorySlug: string; // category slug
   };
 }
 
-async function getCategoryWithSubCategories(navbarSlug: string, categorySlug: string) {
+async function getCategoryWithSubCategories(categorySlug: string) {
   try {
     await connectDB();
 
@@ -21,8 +20,7 @@ async function getCategoryWithSubCategories(navbarSlug: string, categorySlug: st
       isActive: true
     }).populate('navbarCategory', 'name slug description');
 
-    // Verify the category belongs to the correct navbar category
-    if (!category || (category.navbarCategory as any)?.slug !== navbarSlug) {
+    if (!category) {
       return null;
     }
 
@@ -44,7 +42,7 @@ async function getCategoryWithSubCategories(navbarSlug: string, categorySlug: st
 
 export default async function CategorySubCategoriesPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const data = await getCategoryWithSubCategories(resolvedParams.slug, resolvedParams.categorySlug);
+  const data = await getCategoryWithSubCategories(resolvedParams.categorySlug);
 
   if (!data) {
     notFound();
@@ -56,7 +54,7 @@ export default async function CategorySubCategoriesPage({ params }: PageProps) {
 // Generate metadata for the page
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const data = await getCategoryWithSubCategories(resolvedParams.slug, resolvedParams.categorySlug);
+  const data = await getCategoryWithSubCategories(resolvedParams.categorySlug);
 
   if (!data) {
     return {
@@ -83,7 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://huawei-ekit.ae/products/${resolvedParams.slug}/${resolvedParams.categorySlug}`,
+      url: `https://huawei-ekit.ae/products/${resolvedParams.categorySlug}`,
     },
     robots: {
       index: true,

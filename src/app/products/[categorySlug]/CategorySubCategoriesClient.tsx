@@ -131,10 +131,6 @@ export default function CategorySubCategoriesClient({ data }: CategorySubCategor
                   Products
                 </Link>
                 <span>→</span>
-                <Link href={`/products/${navbarCategory.slug}`} className="hover:text-white transition-colors duration-200">
-                  {navbarCategory.name}
-                </Link>
-                <span>→</span>
                 <span className="text-white font-medium">
                   {category.name} Subcategories
                 </span>
@@ -174,12 +170,9 @@ export default function CategorySubCategoriesClient({ data }: CategorySubCategor
               className="inline-flex items-center space-x-2 bg-red-600/20 backdrop-blur-sm text-red-300 px-3 py-1 rounded-full text-xs font-medium border border-red-400/30"
             >
               <span>Part of</span>
-              <Link
-                href={`/products/${navbarCategory.slug}`}
-                className="hover:text-white font-semibold transition-colors duration-200"
-              >
+              <span className="font-semibold">
                 {navbarCategory.name}
-              </Link>
+              </span>
             </motion.div>
           </motion.div>
         </div>
@@ -283,7 +276,7 @@ export default function CategorySubCategoriesClient({ data }: CategorySubCategor
                       {/* Action Button */}
                       <div className="flex justify-center">
                         <Link
-                          href={`/products/${navbarCategory.slug}/${category.slug}/${subcategory.slug}`}
+                          href={`/products/${category.slug}/${subcategory.slug}`}
                           className="mt-auto"
                         >
                           <motion.div
@@ -347,13 +340,13 @@ export default function CategorySubCategoriesClient({ data }: CategorySubCategor
                     </button>
                   )}
                   <Link
-                    href={`/${navbarCategory.slug}`}
+                    href="/products"
                     className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 font-semibold rounded-lg transition-all duration-300 text-sm"
                   >
                     <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Back to {navbarCategory.name}
+                    Back to Products
                   </Link>
                 </div>
               </div>
@@ -378,13 +371,13 @@ export default function CategorySubCategoriesClient({ data }: CategorySubCategor
                 There are currently no subcategories available in this section.
               </p>
               <Link
-                href={`/${navbarCategory.slug}`}
+                href="/products"
                 className="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 text-sm"
               >
                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to {navbarCategory.name}
+                Back to Products
               </Link>
             </div>
           </motion.div>

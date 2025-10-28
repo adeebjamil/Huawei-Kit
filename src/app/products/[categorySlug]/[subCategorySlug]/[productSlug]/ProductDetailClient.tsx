@@ -492,21 +492,21 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         <Link href="/products" className="hover:text-red-600 transition-colors">Products</Link>
                         <span className="text-gray-400">→</span>
                         <Link
-                            href={`/products/${product.navbarCategory.slug}`}
+                            href={`/products/${product.category.slug}`}
                             className="hover:text-red-600 transition-colors"
                         >
                             {product.navbarCategory.name}
                         </Link>
                         <span className="text-gray-400">→</span>
                         <Link
-                            href={`/products/${product.navbarCategory.slug}/${product.category.slug}`}
+                            href={`/products/${product.category.slug}`}
                             className="hover:text-red-600 transition-colors"
                         >
                             {product.category.name} Subcategories
                         </Link>
                         <span className="text-gray-400">→</span>
                         <Link
-                            href={`/products/${product.navbarCategory.slug}/${product.category.slug}/${product.subcategory.slug}`}
+                            href={`/products/${product.category.slug}/${product.subcategory.slug}`}
                             className="hover:text-red-600 transition-colors"
                         >
                              Explore {product.subcategory.name}

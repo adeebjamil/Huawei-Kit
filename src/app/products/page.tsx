@@ -19,8 +19,11 @@ export const metadata: Metadata = {
 
 async function fetchCategories() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
-      next: { revalidate: 3600 } // Revalidate every hour
+    // Use relative URL for internal API calls during build
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/api/categories`, {
+      next: { revalidate: 3600 }, // Revalidate every hour
+      cache: 'force-cache' // Cache during build
     });
     
     if (!response.ok) {
