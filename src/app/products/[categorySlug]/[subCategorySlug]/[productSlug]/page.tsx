@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/mongodb';
 import Product from '@/app/models/Product';
+import NavbarCategory from '@/app/models/NavbarCategory';
+import Category from '@/app/models/Category';
+import SubCategory from '@/app/models/SubCategory';
 import ProductDetailClient from './ProductDetailClient';
 import { Metadata } from 'next';
 
