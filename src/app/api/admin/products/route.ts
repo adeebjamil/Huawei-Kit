@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import Product from '@/app/models/Product';
-import Category from '@/app/models/Category';
-import SubCategory from '@/app/models/SubCategory';
-import NavbarCategory from '@/app/models/NavbarCategory';
+import { Product, Category, SubCategory, NavbarCategory } from '@/app/models';
 import { checkAdminAuth, createAuthResponse } from '@/lib/auth';
 import mongoose from 'mongoose';
 

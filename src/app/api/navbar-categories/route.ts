@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import NavbarCategory from '@/app/models/NavbarCategory';
+import { NavbarCategory } from '@/app/models';
 
 // GET - Fetch active navbar categories (public endpoint)
 export async function GET(request: NextRequest) {

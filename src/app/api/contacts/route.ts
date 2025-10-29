@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import Contact from '@/app/models/Contact';
+import { Contact } from '@/app/models';
 import { rateLimit } from '@/lib/rateLimit';
 import { validateInput } from '@/lib/validation';
 import { checkAdminAuth } from '@/lib/auth';
