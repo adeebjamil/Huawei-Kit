@@ -7,8 +7,9 @@ import Category from '@/app/models/Category';
 import SubCategoryProductsClient from './SubCategoryProductsClient';
 import { Metadata } from 'next';
 
-// Force dynamic rendering
+// Use dynamic rendering but generate static params for known routes
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true; // Allow dynamic params that weren't pre-generated
 export const revalidate = 0;
 
 interface PageProps {
@@ -69,6 +70,32 @@ export default async function SubCategoryProductsPage({ params }: PageProps) {
   }
 
   return <SubCategoryProductsClient data={data} />;
+}
+
+// Generate static params for all active subcategories
+export async function generateStaticParams() {
+  try {
+    await connectDB();
+    
+    // Get all active subcategories with their category populated
+    const subcategories = await SubCategory.find({ isActive: true })
+      .populate({
+        path: 'category',
+        match: { isActive: true },
+        select: 'slug'
+      });
+    
+    // Filter out subcategories where category is null (inactive categories)
+    const validSubcategories = subcategories.filter(sub => sub.category);
+    
+    return validSubcategories.map((subcategory) => ({
+      categorySlug: (subcategory.category as any).slug,
+      subCategorySlug: subcategory.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for subcategories:', error);
+    return [];
+  }
 }
 
 // Generate metadata for the page

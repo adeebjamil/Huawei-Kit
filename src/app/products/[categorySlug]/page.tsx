@@ -6,8 +6,9 @@ import NavbarCategory from '@/app/models/NavbarCategory';
 import CategorySubCategoriesClient from './CategorySubCategoriesClient';
 import { Metadata } from 'next';
 
-// Force dynamic rendering
+// Use dynamic rendering but generate static params for known routes
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true; // Allow dynamic params that weren't pre-generated
 export const revalidate = 0;
 
 interface PageProps {
@@ -54,6 +55,21 @@ export default async function CategorySubCategoriesPage({ params }: PageProps) {
   }
 
   return <CategorySubCategoriesClient data={data} />;
+}
+
+// Generate static params for all active categories
+export async function generateStaticParams() {
+  try {
+    await connectDB();
+    const categories = await Category.find({ isActive: true }).select('slug');
+    
+    return categories.map((category) => ({
+      categorySlug: category.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for categories:', error);
+    return [];
+  }
 }
 
 // Generate metadata for the page
