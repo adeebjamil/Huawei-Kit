@@ -5,6 +5,10 @@ import SubCategory from '@/app/models/SubCategory';
 import CategorySubCategoriesClient from './CategorySubCategoriesClient';
 import { Metadata } from 'next';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   params: {
     categorySlug: string; // category slug
