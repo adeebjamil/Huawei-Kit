@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
 import ProductsClient from './ProductsClient';
 import connectDB from '@/lib/mongodb';
-import Category from '@/app/models/Category';
-import NavbarCategory from '@/app/models/NavbarCategory';
+import { Category, NavbarCategory } from '@/app/models';
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
