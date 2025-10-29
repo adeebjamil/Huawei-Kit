@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import ProductsClient from './ProductsClient';
+import connectDB from '@/lib/mongodb';
+import Category from '@/app/models/Category';
+import NavbarCategory from '@/app/models/NavbarCategory';
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
@@ -23,18 +26,25 @@ export const metadata: Metadata = {
 
 async function fetchCategories() {
   try {
-    // Use relative URL for internal API calls
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/api/categories`, {
-      cache: 'no-store' // Don't cache to always get fresh data
-    });
+    // Direct database connection instead of API call
+    await connectDB();
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-    
-    const data = await response.json();
-    return data;
+    const categories = await Category.find({ isActive: true })
+      .populate({
+        path: 'navbarCategory',
+        match: { isActive: true },
+        select: 'name slug description order'
+      })
+      .select('name slug description image navbarCategory order')
+      .sort({ order: 1, createdAt: -1 });
+
+    // Filter out categories where navbar category is null (inactive navbar categories)
+    const filteredCategories = categories.filter(category => category.navbarCategory);
+
+    return { 
+      success: true, 
+      data: JSON.parse(JSON.stringify(filteredCategories))
+    };
   } catch (error) {
     console.error('Error fetching categories:', error);
     return { success: false, data: null };
